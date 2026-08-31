@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HP21 - RPN Calculator</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/display.css" />
+    <link rel="stylesheet" href="css/keypad.css" />
+  </head>
+  <body>
+    <main class="calculator" aria-label="HP-21 style RPN calculator">
+      <div class="brand-row">
+        <span class="brand">hp</span>
+        <span class="model">21</span>
+      </div>
+
+      <section id="display" class="display" aria-live="polite">
+        <div id="display-y" class="display-line display-y"></div>
+        <div id="display-x" class="display-line display-x">0.0000</div>
+      </section>
+
+      <div id="keypad" class="keypad"></div>
+    </main>
+
+    <script type="module" src="dist/ui/app.js"></script>
+  </body>
+</html>

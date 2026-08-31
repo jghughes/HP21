@@ -1,0 +1,100 @@
+/* Keypad grid: 6 columns x 5 rows matching src/ui/key-layout.ts ordering. */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(6px, 1.5vw, 10px);
+}
+
+.key {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-key);
+  background: linear-gradient(180deg, var(--key-face), #2f2b27);
+  color: var(--key-legend);
+  font-family: var(--font-ui);
+  font-size: clamp(0.7rem, 2.6vw, 0.85rem);
+  font-weight: 600;
+  padding: clamp(10px, 3vw, 14px) 4px;
+  min-height: 44px;
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
+}
+
+.key:hover {
+  background: linear-gradient(180deg, var(--key-face-hover), #37322d);
+}
+
+.key:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Persistent highlight for the currently active DEG/RAD/GRAD key - kept subtle. */
+.key.key-active {
+  background: linear-gradient(180deg, #4a4238, #3a342c);
+  color: var(--key-legend-secondary);
+  box-shadow:
+    0 0 0 1px rgba(216, 178, 92, 0.5),
+    0 3px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.key-label {
+  pointer-events: none;
+}
+
+/* Function-row keys (sin/cos/tan/DEG/RAD/GRAD/FIX/SCI/ENG) get the amber secondary-legend color. */
+.key[data-key-id="sin"],
+.key[data-key-id="cos"],
+.key[data-key-id="tan"],
+.key[data-key-id="deg"],
+.key[data-key-id="rad"],
+.key[data-key-id="grad"],
+.key[data-key-id="fix"],
+.key[data-key-id="sci"],
+.key[data-key-id="eng"] {
+  color: var(--key-legend-secondary);
+}
+
+/* ENTER spans two columns, matching real HP calculators' larger ENTER key. */
+.key[data-key-id="enter"] {
+  grid-column: span 2;
+}
+
+/* Digits and the four basic arithmetic operators get a larger legend to match the visual
+   weight of the other keys' labels. Digits use the same weight as ENTER (600); operators
+   stay a bit bolder (700) to remain visually distinct from plain digits. */
+.key[data-key-id^="digit"],
+.key[data-key-id="add"],
+.key[data-key-id="sub"],
+.key[data-key-id="mul"],
+.key[data-key-id="div"] {
+  font-size: clamp(1rem, 4vw, 1.3rem);
+}
+
+.key[data-key-id^="digit"] {
+  font-weight: 400;
+}
+
+.key[data-key-id="add"],
+.key[data-key-id="sub"],
+.key[data-key-id="mul"],
+.key[data-key-id="div"] {
+  font-weight: 700;
+}
+
+/* Shift 0 and . one column to the right in the final row, leaving a gap after '+'. */
+.key[data-key-id="digit0"] {
+  grid-column: 3;
+}
+
+.key[data-key-id="decimal"] {
+  grid-column: 4;
+}

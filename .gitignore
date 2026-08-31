@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+[Oo]bj/
+[Bb]in/
+*.user
+
+# Node / npm
+node_modules/
+npm-debug.log*
+
+# TypeScript build output
+dist/
+tsconfig.tsbuildinfo
+
+# OS junk
+Thumbs.db
+.DS_Store
