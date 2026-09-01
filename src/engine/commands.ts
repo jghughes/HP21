@@ -22,6 +22,10 @@ export type Command =
   | { kind: "sin" }
   | { kind: "cos" }
   | { kind: "tan" }
+  | { kind: "reciprocal" }
+  | { kind: "exp" }
+  | { kind: "sqrt" }
+  | { kind: "pi" }
   | { kind: "angleMode"; mode: AngleMode }
   | { kind: "displayMode"; mode: DisplayMode }
   | { kind: "modeDigit"; value: string }; // digit following a pending FIX/SCI/ENG mode key

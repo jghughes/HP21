@@ -1,4 +1,4 @@
-/* Keypad grid: 6 columns x 5 rows matching src/ui/key-layout.ts ordering. */
+/* Keypad grid: 6 columns, row count driven by src/ui/key-layout.ts ordering. */
 .keypad {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -47,6 +47,14 @@
 }
 
 .key-label {
+  pointer-events: none;
+}
+
+/* Empty placeholder slots (e.g. filling out the ENTER row) - invisible and non-interactive. */
+.key-spacer {
+  background: none;
+  box-shadow: none;
+  cursor: default;
   pointer-events: none;
 }
 

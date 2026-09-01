@@ -12,9 +12,9 @@ export interface DisplayState {
 const MAX_SIGNIFICANT_DIGITS = 10;
 const MAX_MAGNITUDE = 9.999999999e99;
 
-/** Compact FIX-4-style formatting always used for the secondary Y line. */
-export function formatSecondary(value: number): string {
-  return formatFixed(value, 4);
+/** Compact fixed-decimal formatting for the secondary Y line, matching the primary line's decimal-place setting. */
+export function formatSecondary(value: number, settings: Settings): string {
+  return formatFixed(value, settings.decimalPlaces);
 }
 
 export function formatNumber(value: number, settings: Settings): string {

@@ -1,5 +1,5 @@
 // Persisted user settings: angle mode, display mode, and decimal-place count.
-// Loaded/saved via localStorage; falls back to defaults (DEG, FIX-4) when absent or invalid.
+// Loaded/saved via localStorage; falls back to defaults (DEG, FIX-2) when absent or invalid.
 
 import type { AngleMode, DisplayMode } from "./commands.js";
 
@@ -14,7 +14,7 @@ const STORAGE_KEY = "hp21.settings";
 export const DEFAULT_SETTINGS: Settings = {
   angleMode: "DEG",
   displayMode: "FIX",
-  decimalPlaces: 4,
+  decimalPlaces: 2,
 };
 
 function isAngleMode(value: unknown): value is AngleMode {

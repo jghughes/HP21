@@ -48,3 +48,21 @@ export function tan(x: number, angleMode: AngleMode): number | CalcError {
   }
   return result;
 }
+
+export function reciprocal(x: number): number | CalcError {
+  if (x === 0) {
+    return makeDivideByZeroError();
+  }
+  return 1 / x;
+}
+
+export function exp(x: number): number | CalcError {
+  return Math.exp(x);
+}
+
+export function sqrt(x: number): number | CalcError {
+  if (x < 0) {
+    return makeDomainError();
+  }
+  return Math.sqrt(x);
+}

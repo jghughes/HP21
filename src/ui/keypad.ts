@@ -25,6 +25,16 @@ export function renderKeypad(container: HTMLElement, onCommand: (command: Comman
     button.type = "button";
     button.className = "key";
     button.dataset["keyId"] = key.id;
+
+    if (!key.command) {
+      button.classList.add("key-spacer");
+      button.disabled = true;
+      button.setAttribute("aria-hidden", "true");
+      button.tabIndex = -1;
+      container.appendChild(button);
+      continue;
+    }
+
     button.setAttribute("aria-label", key.label);
 
     const label = document.createElement("span");
@@ -33,7 +43,7 @@ export function renderKeypad(container: HTMLElement, onCommand: (command: Comman
     button.appendChild(label);
 
     button.addEventListener("click", () => {
-      onCommand(key.command);
+      onCommand(key.command!);
     });
 
     container.appendChild(button);

@@ -104,6 +104,18 @@ export class Calculator {
       case "tan":
         this.applyUnary((x) => ops.tan(x, this.settings.angleMode));
         break;
+      case "reciprocal":
+        this.applyUnary(ops.reciprocal);
+        break;
+      case "exp":
+        this.applyUnary(ops.exp);
+        break;
+      case "sqrt":
+        this.applyUnary(ops.sqrt);
+        break;
+      case "pi":
+        this.doPi();
+        break;
       case "angleMode":
         this.setAngleMode(command.mode);
         break;
@@ -123,7 +135,7 @@ export class Calculator {
     const xValue = this.entryInProgress
       ? this.currentEntryDisplayText()
       : formatNumber(this.stack.x, this.settings);
-    const yLine = formatSecondary(this.stack.y);
+    const yLine = formatSecondary(this.stack.y, this.settings);
     return { xLine: xValue, yLine, isError: false };
   }
 
@@ -212,6 +224,13 @@ export class Calculator {
   private doEnter(): void {
     this.commitEntryIfNeeded();
     this.stack.duplicateXIntoY();
+  }
+
+  /** Pushes the constant pi onto the stack, like entering a new value. */
+  private doPi(): void {
+    this.commitEntryIfNeeded();
+    this.stack.liftIfEnabled();
+    this.stack.setX(Math.PI);
   }
 
   private doChs(): void {
