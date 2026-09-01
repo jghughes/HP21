@@ -1,0 +1,5 @@
+# Keep checked-out text files consistent with the project's Windows line-ending convention.
+* text=auto eol=crlf
+
+# Fonts are binary and must not undergo text normalization.
+*.woff2 -text !eol

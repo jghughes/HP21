@@ -9,14 +9,12 @@
     "clean": "tsc --build --clean && node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "serve": "http-server -p 5500 -c-1",
     "start": "npm run build && npm run serve",
-    "lint": "eslint .",
     "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^9.39.5",
     "http-server": "^14.1.1",
     "prettier": "^3.3.3",
     "typescript": "^7.0.2"
