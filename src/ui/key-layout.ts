@@ -60,5 +60,4 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "digit3", label: "3", command: { kind: "digit", value: "3" } },
   { id: "decimal", label: ".", command: { kind: "decimalPoint" } },
   { id: "spacer3", label: "" },
-
 ];

@@ -15,6 +15,8 @@
     // Other Outputs
     "sourceMap": true,
     "declaration": false,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
