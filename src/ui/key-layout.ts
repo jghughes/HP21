@@ -31,8 +31,8 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "exp", label: "e^x", command: { kind: "exp" } },
   { id: "sqrt", label: "\u221ax", command: { kind: "sqrt" } },
   { id: "power", label: "x^y", command: { kind: "power" } },
-  { id: "spacer15", label: "" },
-  { id: "spacer16", label: "" },
+  { id: "sto", label: "STO", command: { kind: "store" } },
+  { id: "rcl", label: "RCL", command: { kind: "recall" } },
 
   { id: "enter", label: "ENTER", command: { kind: "enter" } },
   { id: "chs", label: "CHS", command: { kind: "chs" } },
@@ -44,24 +44,21 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "digit7", label: "7", command: { kind: "digit", value: "7" } },
   { id: "digit8", label: "8", command: { kind: "digit", value: "8" } },
   { id: "digit9", label: "9", command: { kind: "digit", value: "9" } },
-  { id: "spacer9", label: "" },
-  { id: "spacer10", label: "" },
+  { id: "mul", label: "\u00d7", command: { kind: "mul" } },
+  { id: "spacer1", label: "" },
 
   { id: "add", label: "+", command: { kind: "add" } },
   { id: "digit4", label: "4", command: { kind: "digit", value: "4" } },
   { id: "digit5", label: "5", command: { kind: "digit", value: "5" } },
   { id: "digit6", label: "6", command: { kind: "digit", value: "6" } },
-  { id: "spacer7", label: "" },
-  { id: "spacer8", label: "" },
+  { id: "div", label: "\u00f7", command: { kind: "div" } },
+  { id: "spacer2", label: "" },
 
-  { id: "mul", label: "\u00d7", command: { kind: "mul" } },
+  { id: "digit0", label: "0", command: { kind: "digit", value: "0" } },
   { id: "digit1", label: "1", command: { kind: "digit", value: "1" } },
   { id: "digit2", label: "2", command: { kind: "digit", value: "2" } },
   { id: "digit3", label: "3", command: { kind: "digit", value: "3" } },
-  { id: "spacer5", label: "" },
-  { id: "spacer6", label: "" },
-
-  { id: "div", label: "\u00f7", command: { kind: "div" } },
-  { id: "digit0", label: "0", command: { kind: "digit", value: "0" } },
   { id: "decimal", label: ".", command: { kind: "decimalPoint" } },
+  { id: "spacer3", label: "" },
+
 ];

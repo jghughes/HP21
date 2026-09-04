@@ -13,6 +13,8 @@ export type Command =
   | { kind: "clearAll" }
   | { kind: "rollDown" }
   | { kind: "swapXY" }
+  | { kind: "store" }
+  | { kind: "recall" }
   | { kind: "eex" }
   | { kind: "add" }
   | { kind: "sub" }

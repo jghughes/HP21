@@ -13,6 +13,7 @@ type PendingModeKey = DisplayMode | null;
 export class Calculator {
   private readonly stack = new Stack();
   private settings: Settings;
+  private memory = 0;
 
   /** True while the user is actively typing digits/decimal/exponent into X. */
   private entryInProgress = false;
@@ -76,6 +77,12 @@ export class Calculator {
       case "swapXY":
         this.commitEntryIfNeeded();
         this.stack.swapXY();
+        break;
+      case "store":
+        this.doStore();
+        break;
+      case "recall":
+        this.doRecall();
         break;
       case "eex":
         this.doEex();
@@ -258,12 +265,24 @@ export class Calculator {
 
   private doClearAll(): void {
     this.stack.clearAll();
+    this.memory = 0;
     this.entryInProgress = false;
     this.entryBuffer = "";
     this.exponentEntryActive = false;
     this.exponentBuffer = "";
     this.mantissaNegative = false;
     this.exponentNegative = false;
+  }
+
+  private doStore(): void {
+    this.commitEntryIfNeeded();
+    this.memory = this.stack.x;
+  }
+
+  private doRecall(): void {
+    this.commitEntryIfNeeded();
+    this.stack.liftIfEnabled();
+    this.stack.setX(this.memory);
   }
 
   private applyBinary(fn: (y: number, x: number) => number | ReturnType<typeof ops.div>): void {

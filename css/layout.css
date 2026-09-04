@@ -1,7 +1,10 @@
-/* Overall calculator body layout and responsive scaling. */
+/* Overall calculator body layout and responsive scaling.
+   Sizing clamps mix vw (width-driven) and dvh (height-driven) bounds so the whole
+   calculator scales down to fit short phone viewports instead of overflowing. */
 .calculator {
   width: min(92vw, 420px);
-  padding: clamp(16px, 4vw, 28px);
+  max-height: 100dvh;
+  padding: clamp(6px, min(4vw, 3dvh), 28px);
   background: linear-gradient(180deg, var(--case-dark), var(--case-darker));
   border: 2px solid var(--case-trim);
   border-radius: var(--radius-case);
@@ -14,17 +17,18 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 10px;
+  /* Shrinks on short viewports to help fund the keypad's 44px touch-target floor. */
+  margin-bottom: clamp(4px, 1dvh, 10px);
   color: var(--case-trim);
   font-weight: 700;
   letter-spacing: 1px;
 }
 
 .brand {
-  font-size: 1.1rem;
+  font-size: clamp(0.85rem, 2dvh, 1.1rem);
   text-transform: lowercase;
 }
 
 .model {
-  font-size: 1.1rem;
+  font-size: clamp(0.85rem, 2dvh, 1.1rem);
 }
