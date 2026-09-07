@@ -32,6 +32,10 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectDir = Resolve-Path (Join-Path $scriptDir "..")
 
+if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
+	throw "Azure CLI ('az') was not found on PATH. Install it from https://aka.ms/installazurecliwindows and try again."
+}
+
 # Helper function: Validate that static website hosting is enabled
 function Test-StaticWebsiteEnabled {
 	param([string]$StorageAccountName, [string]$AccountKey)
@@ -85,11 +89,72 @@ function Remove-SourceMaps {
 	}
 }
 
+# Helper function: List existing blobs under a prefix (no deletion).
+function Get-ExistingBlobNames {
+	param([string]$StorageAccountName, [string]$AccountKey, [string]$Prefix)
+
+	$existingBlobs = az storage blob list `
+		--account-name $StorageAccountName `
+		--account-key $AccountKey `
+		--container-name '$web' `
+		--prefix $Prefix `
+		--query "[].name" -o tsv
+
+	if ($LASTEXITCODE -ne 0) {
+		throw "Failed to list existing blobs under `$web/$Prefix (exit code $LASTEXITCODE)."
+	}
+
+	if (-not $existingBlobs) {
+		return @()
+	}
+
+	return @($existingBlobs -split "`n" | Where-Object { $_ })
+}
+
+# Helper function: Delete blobs under a prefix. Caller is responsible for confirming
+# with the user beforehand and reporting the result.
+function Remove-ExistingBlobs {
+	param([string]$StorageAccountName, [string]$AccountKey, [string]$Prefix)
+
+	az storage blob delete-batch `
+		--account-name $StorageAccountName `
+		--account-key $AccountKey `
+		--source '$web' `
+		--pattern "$Prefix*" | Out-Null
+
+	if ($LASTEXITCODE -ne 0) {
+		throw "Failed to delete existing blobs under `$web/$Prefix (exit code $LASTEXITCODE)."
+	}
+}
+
 # Helper function: Construct the public URL for the deployed static website
 function Get-StorageWebsiteUrl {
 	param([string]$StorageAccountName)
 	
 	return "https://${StorageAccountName}.blob.core.windows.net/`$web/HP21/index.html"
+}
+
+# Helper function: Preview the files that would be uploaded from a folder, printing each
+# one so the user can review before the real upload happens. Enumerates local files
+# directly rather than parsing 'az ... --dryrun' output, which isn't reliably structured.
+function Show-UploadPreview {
+	param([string]$SourcePath, [string]$Destination)
+
+	if (-not (Test-Path $SourcePath)) {
+		return
+	}
+
+	$files = @(Get-ChildItem -Path $SourcePath -Recurse -File)
+	foreach ($file in $files) {
+		$relativePath = $file.FullName.Substring((Resolve-Path $SourcePath).Path.Length + 1) -replace '\\', '/'
+		Write-Host "  - `$web/$Destination/$relativePath" -ForegroundColor Yellow
+	}
+}
+
+Write-Host "Verifying Azure CLI login..." -ForegroundColor Cyan
+az account show --query "user.name" -o tsv | Out-Null
+if ($LASTEXITCODE -ne 0) {
+	throw "Not logged in to Azure CLI (or session expired). Run 'az login' and try again."
 }
 
 Write-Host "Resolving storage account key..." -ForegroundColor Cyan
@@ -98,8 +163,8 @@ $accountKey = az storage account keys list `
 	--resource-group $ResourceGroupName `
 	--query "[0].value" -o tsv
 
-if (-not $accountKey) {
-	throw "Failed to resolve an account key for storage account '$StorageAccountName'."
+if ($LASTEXITCODE -ne 0 -or -not $accountKey) {
+	throw "Failed to resolve an account key for storage account '$StorageAccountName' (exit code $LASTEXITCODE). Verify the account name and resource group are correct."
 }
 
 Write-Host "Validating storage account configuration..." -ForegroundColor Cyan
@@ -134,6 +199,37 @@ finally {
 Remove-SourceMaps -DistPath (Join-Path $projectDir "dist")
 Write-Host ""
 
+$existingBlobNames = Get-ExistingBlobNames -StorageAccountName $StorageAccountName -AccountKey $accountKey -Prefix "HP21/"
+
+Write-Host "The following $($existingBlobNames.Count) blob(s) will be DELETED from `$web/HP21/ before upload:" -ForegroundColor Yellow
+if ($existingBlobNames.Count -eq 0) {
+	Write-Host "  (none)" -ForegroundColor Yellow
+}
+else {
+	foreach ($name in $existingBlobNames) {
+		Write-Host "  - $name" -ForegroundColor Yellow
+	}
+}
+Write-Host ""
+
+Write-Host "The following file(s) will be uploaded to `$web:" -ForegroundColor Yellow
+Show-UploadPreview -SourcePath (Join-Path $projectDir "dist") -Destination "HP21/dist"
+Show-UploadPreview -SourcePath (Join-Path $projectDir "css") -Destination "HP21/css"
+Write-Host "  - `$web/HP21/index.html" -ForegroundColor Yellow
+Write-Host ""
+
+$confirmation = Read-Host "Type 'yes' to proceed with deletion and upload, or anything else to abort"
+if ($confirmation -ne "yes") {
+	throw "Deployment aborted by user before deleting/uploading."
+}
+Write-Host ""
+
+if ($existingBlobNames.Count -gt 0) {
+	Remove-ExistingBlobs -StorageAccountName $StorageAccountName -AccountKey $accountKey -Prefix "HP21/"
+}
+Write-Host "Deleted $($existingBlobNames.Count) blob(s)" -ForegroundColor Green
+Write-Host ""
+
 function Publish-Folder {
 	param(
 		[string]$SourcePath,
@@ -141,39 +237,44 @@ function Publish-Folder {
 	)
 
 	if (-not (Test-Path $SourcePath)) {
-		Write-Warning "Skipping upload, path not found: $SourcePath"
-		return
+		return 0
 	}
 
-	Write-Host "Uploading '$SourcePath' -> `$web/$Destination" -ForegroundColor Cyan
 	az storage blob upload-batch `
 		--account-name $StorageAccountName `
 		--account-key $accountKey `
 		--destination '$web' `
 		--destination-path $Destination `
 		--source $SourcePath `
-		--overwrite
-	
+		--content-cache-control "no-cache" `
+		--overwrite | Out-Null
+
 	if ($LASTEXITCODE -ne 0) {
 		throw "Failed to upload '$SourcePath' to `$web/$Destination (exit code $LASTEXITCODE)"
 	}
+
+	return @(Get-ChildItem -Path $SourcePath -Recurse -File).Count
 }
 
-Publish-Folder -SourcePath (Join-Path $projectDir "dist") -Destination "HP21/dist"
-Publish-Folder -SourcePath (Join-Path $projectDir "css") -Destination "HP21/css"
+$uploadedCount = 0
+$uploadedCount += Publish-Folder -SourcePath (Join-Path $projectDir "dist") -Destination "HP21/dist"
+$uploadedCount += Publish-Folder -SourcePath (Join-Path $projectDir "css") -Destination "HP21/css"
 
-Write-Host "Uploading index.html -> `$web/HP21/index.html" -ForegroundColor Cyan
 az storage blob upload `
 	--account-name $StorageAccountName `
 	--account-key $accountKey `
 	--container-name '$web' `
 	--file (Join-Path $projectDir "index.html") `
 	--name "HP21/index.html" `
-	--overwrite
+	--content-cache-control "no-cache" `
+	--overwrite | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
 	throw "Failed to upload index.html to `$web/HP21/index.html (exit code $LASTEXITCODE)"
 }
+$uploadedCount += 1
+
+Write-Host "Uploaded $uploadedCount file(s)" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "Deployment complete." -ForegroundColor Green
