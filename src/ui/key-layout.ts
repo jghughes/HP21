@@ -40,14 +40,14 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "clx", label: "CLX", command: { kind: "clx" } },
   { id: "clearall", label: "CLEAR", command: { kind: "clearAll" } },
 
-  { id: "sub", label: "\u2212", command: { kind: "sub" } },
+  { id: "add", label: "+", command: { kind: "add" } },
   { id: "digit7", label: "7", command: { kind: "digit", value: "7" } },
   { id: "digit8", label: "8", command: { kind: "digit", value: "8" } },
   { id: "digit9", label: "9", command: { kind: "digit", value: "9" } },
   { id: "mul", label: "\u00d7", command: { kind: "mul" } },
   { id: "spacer1", label: "" },
 
-  { id: "add", label: "+", command: { kind: "add" } },
+  { id: "sub", label: "\u2212", command: { kind: "sub" } },
   { id: "digit4", label: "4", command: { kind: "digit", value: "4" } },
   { id: "digit5", label: "5", command: { kind: "digit", value: "5" } },
   { id: "digit6", label: "6", command: { kind: "digit", value: "6" } },

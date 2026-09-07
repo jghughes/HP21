@@ -16,7 +16,7 @@ npm install
 
 Open the repository in VS Code and press <kbd>F5</kbd>. Select the Edge or Chrome launch configuration when prompted.
 
-VS Code builds the app, starts the local server, and opens the calculator at `http://127.0.0.1:5500/index.html`.
+VS Code builds the app, starts the local server, and opens the calculator at `http://127.0.0.1:5500/index.html` as specified in launch.json.
 
 ## Housekeeping
 
